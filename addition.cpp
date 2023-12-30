@@ -8,7 +8,7 @@ struct queue {
   int items[SIZE;
   int front;
   int rear;
-};
+;
 
 struct queue* createQueue();
 void enqueue(struct queue* q, int);
