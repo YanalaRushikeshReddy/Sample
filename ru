@@ -1,129 +1,102 @@
-Problem Description
-A 14-segment display is a creative innovation in the field of electronics. A 14-segment display circuit can display all alphabets from A to Z (all in caps). Each alphabet is represented as a grid of 9 X 5. 0 (Zero) on the grid denotes that the LED at that place in the grid is turned OFF, whereas 1 denotes that the LED at that place in the grid is turned ON. The alphabets given as input may be padded with spaces between them i.e., the input grid is always of size 9 X Z where 9 is the number of rows and Z is the number of columns. Here Z is the total number of columns used to represent alphabets and the padding between the alphabets.
+char_map = {
+    'A': [
+        "01110",
+        "10001",
+        "10001",
+        "11111",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "10001"
+    ],
+    'B': [
+        "11110",
+        "10001",
+        "10001",
+        "11110",
+        "10001",
+        "10001",
+        "10001",
+        "10001",
+        "11110"
+    ],
+    'C': [
+        "01111",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "10000",
+        "01111"
+    ],
+    'T': [
+        "11111",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100",
+        "00100"
+    ],
+    'S': [
+        "01111",
+        "10000",
+        "10000",
+        "01111",
+        "00001",
+        "00001",
+        "00001",
+        "00001",
+        "11110"
+    ],
+    'Z': [
+        "11111",
+        "00010",
+        "00010",
+        "00100",
+        "00100",
+        "01000",
+        "01000",
+        "10000",
+        "11111"
+    ],
+    'R': [
+        "11110",
+        "10001",
+        "10001",
+        "11110",
+        "10100",
+        "10010",
+        "10001",
+        "10001",
+        "10001"
+    ]
+}
 
-Padding between alphabets is done using zeros (0). The padding between two alphabets on the grid can have random width.
+# Step 2: Reverse map for quick lookup
+_grid_to_char = {"\n".join(v): k for k, v in char_map.items()}
 
-11111 11111 11111 11111 11111 11111 11111 10001 11111 11111 10001 10000 11111
-10001 10001 10000 10001 10000 10000 10000 10001 00100 00001 10010 10000 10101
-10001 10001 10000 10001 10000
-10000 10000 10001 00100 00001 10100 10000 10101
-10001 10001 10000 10001 10000 10000 10000 10001 00100 00001 11000 10000 10101
-11111 11111 10000 10001 11111 11111 10111 11111 00100 10001 11111 10000 10101
-10001 10001 10000 10001 10000 10000 10001 10001 00100 10001 10001 10000 10001
-10001 10001 10000 10001 10000 10000 10001 10001 00100 10001 10001 10000 10001
-10001 10001 10000 10001 10000 10000 10001 10001 00100 10001 10001 10000 10001
-10001 11111 11111 11111 11111 10000 11111 10001 11111 11111 10001 11111 10001
-A
-B
-C
-D
-E
-F
-H
--
-J
-K
-L
-M
-10001 01110 11111 11111 11111 11111 11111 10001 10001 10001 10001 10001 11111
-11001 10001 10001 10001 10001 10000 00100 10001 10001 10001 00000 10001 00000
-10101 10001 10001 10001 10001 10000 00100 10001 10001 10001 01010 10001 00010
-10011 10001 10001 10001 10001 10000 00100 10001 10001 10001 00000 10001 00000
-10001 10001 11111 10101 11111 11111 00100 10001 10001 10101 00100
-11111 00100
-10001 10001 10000 10001 11000 00001 00100 10001 10001 10101 00000 00001 00000
-10001 10001 10000 10011 10100 00001 00100 10001 10001 10101 01010 00001 01000
-10001 10001 10000 10001 10010 00001 00100 10001 01010 10101 00000 00001 00000
-10001 01110 10000 11111 10001 11111 00100 11111 00100 11111 10001 11111 11111
-N
-0
-P
-Q
-R
-S
-T
-U
-V
-W
-X
-Y
-Z
+# Step 3: Function to decode the grid
+def decode_14_segment_display(grid):
+    result = []
+    num_cols = len(grid[0])
+    col = 0
+    while col < num_cols:  # Extract the 9x5 grid for the current character
+        char_grid = [row[col:col + 5] for row in grid]
+        # Check if it matches a known character
+        char_key = "\n".join(char_grid)
+        if char_key in _grid_to_char:
+            result.append(_grid_to_char[char_key])
+            col += 5  # Skip to the next character
+        else:
+            col += 1  # Skip padding or unrecognized columns
+    return "".join(result)
 
-Given the grid, determine what alphabets are displayed by the grid.
-
-Constraints
-Each alphabet is displayed by a 9 X 5 grid
-
-1 <= Number of alphabets <= 10000
-
-Input
-Input consists of 9 lines where each line contains a binary string (consisting of 0 and 1) of equal breadth.
-
-Output
-Print alphabets displayed on the 14-segment display.
-
-Time Limit (secs)
-1
-
-Examples
-Example 1
-
-Input
-
-111110000011111011111
-
-001000000010000010000
-
-001000000010000010000
-
-001000000010000010000
-
-001000000010000011111
-
-001000000010000000001
-
-001000000010000000001
-
-001000000010000000001
-
-001000000011111011111
-
-Output
-
-TCS
-
-Explanation
-
-Here, the first 9 X 5 grid represents the alphabet 'T' and then we have a padding of width 5 (00000). Then the next 9 X 5 grid represents the alphabet 'C' and then we have padding of width 1 (0) and the next 9 X 5 grid represents the alphabet 'S'.
-
-Example 2
-
-Input
-
-1111100000111110001111100111110000010001
-
-1000000000100010001000100000000000000000
-
-1000000000100010001000100000100000001010
-
-1000000000100010001000100000000000000000
-
-1111100000111110001111100001000000000100
-
-0000100000100010001100000000000000000000
-
-0000100000100010001010000010000000001010
-
-0000100000100010001001000000000000000000
-
-1111100000100010001000100111110000010001
-
-Output
-
-SARZX
-
-Explanation
-
-Here, the first 9 X 5 grid represents the alphabet S and there is a padding of width 5 (00000) and the next 9 X 5 grid represents the alphabet 'A' and then we have a padding of width 3 (000) and so on.
-
-There are 5 alphabets in this grid which are SARZX. 
+# Input and decoding
+grid = [input().strip() for _ in range(9)]
+print(decode_14_segment_display(grid))
